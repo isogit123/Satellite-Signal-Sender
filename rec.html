@@ -1,0 +1,80 @@
+
+<html>
+	<head></head>
+	<body>
+<div>
+
+	<label id="signal"></label>
+	</div>
+	<div>
+	<label id="count"></label>
+	</div>
+	<div>
+	<label id="sel">No selection.</label>
+	</div>
+	<div>
+		<button onclick="socket.emit('resetRoi', null); point2 = false; $('#sel').html('No selection.');">Full Image</button>
+		<button onclick="point2 = false; $('#sel').html('No selection.');">Clear Selection</button>
+	</div>
+
+<div>
+
+		<canvas id="output"></canvas>
+		</div>
+
+<script src="socket.io.js"></script>
+<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+<script>
+    var socket = io();
+     point2 = false;
+canvas = document.getElementById('output');
+var ctx = canvas.getContext('2d');
+var img = new Image;
+count = 0;
+img.onload = function(){
+	ctx.save();
+	canvas.width=img.width;
+    canvas.height=img.height;
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(img,0,0);
+  ctx.restore();
+};
+socket.on('image', function(msg){
+	 //console.log('receiveSignal:', msg);
+      img.src = msg.img;
+      
+    });
+	
+socket.on('receiveSignal', function(msg){
+//console.log('receiveSignal:', msg);
+ $('#signal').html('Signal: ' + msg.signal);
+  count++;
+  if(count === 100)
+	count = 0;
+	$('#count').html('Count: ' + count);
+});
+
+$(canvas).on("click", function(event) {
+	if(point2 === false){
+        x1 = event.pageX - this.offsetLeft;
+        y1 = event.pageY - this.offsetTop;
+        point2 = true;
+		$('#sel').html('Point 1 selected.');
+        }
+        else
+        {
+			$('#sel').html('Selection done.');
+        	x2 = Math.abs(event.pageX - this.offsetLeft);
+            y2 = Math.abs(event.pageY - this.offsetTop);
+            point2 = false;
+            socket.emit('roi', {
+   			x1: x1,
+   x2: x2,
+   y1: y1,
+   y2: y2
+});
+}
+    });
+</script>
+</body>
+</html>

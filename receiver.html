@@ -1,0 +1,48 @@
+<html>
+	<head></head>
+	<body>
+		<canvas id="output"></canvas>
+		<button onclick="socket.emit('roi', null); point2 = false;">Full Image</button>
+<script src="/socket.io.js"></script>
+<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+<script>
+    var socket = io();
+     point2 = false;
+canvas = document.getElementById('output');
+var ctx = canvas.getContext('2d');
+var img = new Image;
+img.onload = function(){
+	ctx.save();
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(img,0,0);
+  ctx.restore();
+};
+socket.on('image', function(msg){
+	 
+      img.src = msg.img;
+      canvas.width=img.width;
+      canvas.height=img.height;
+    });
+
+$(canvas).on("click", function(event) {
+	if(point2 === false){
+        x1 = event.pageX - this.offsetLeft;
+        y1 = event.pageY - this.offsetTop;
+        point2 = true;
+        }
+        else
+        {
+        	x2 = Math.abs(event.pageX - this.offsetLeft - x1);
+            y2 = Math.abs(event.pageY - this.offsetTop - y1);
+            point2 = false;
+            socket.emit('roi', {
+   			x1: x1,
+   x2: x2,
+   y1: y1,
+   y2: y2
+});
+}
+    });
+</script>
+</body>
+</html>
