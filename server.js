@@ -23,15 +23,8 @@ client.broadcast.emit('resetRoi', data);
  
 });
 app.use(exp.static(__dirname));
-app.get('/sender', function(req, res){
-  res.sendFile(__dirname + '/sender.html');
-});
-
-app.get('/receiver', function(req, res){
-  res.sendFile(__dirname + '/receiver.html');
-});
 
 app.get('/rec', function(req, res){
-  res.sendFile(__dirname + '/rec.html');
+  res.sendFile(__dirname + '/receiver.html');
 });
-server.listen(process.env.PORT);
+server.listen(5022);
