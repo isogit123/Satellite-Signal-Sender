@@ -7,6 +7,9 @@ import base64
 sio = socketio.Client()
 
 points = {'x1': 0, 'y1': 0, 'x2': 5, 'y2': 5}
+#sendImage=0, no image sent
+#sendImage=1, send full image
+#sendImage=2, cropped image is sent
 sendImage = 0
 @sio.event
 def connect():
@@ -34,24 +37,23 @@ def disconnect():
 def emitImage(img):
 	retval, buffer = cv2.imencode('.webp', img)
 	img_as_text = base64.b64encode(buffer)
-	#cv2.imwrite('r.webp', img) 
 	sio.emit('image', {'img': 'data:image/webp;base64,' + str(img_as_text)[2:len(img_as_text)+2]})
 
 sio.connect('http://localhost:5022')
 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture('C:\\Users\\tot13\\Documents\\Bandicam\\bandicam 2020-11-10 18-01-18-255.mp4')
 config = ("-l eng --oem 1 --psm 7")
 
 while(True):
     # Capture frame-by-frame
 	ret, frame = cap.read()
-#	print('New points  ', points)
-	#w = abs(points['x2']-points['x1'])
-	#h = abs(points['y2']-points['y1'])
+	#Selects region of interest selected by receiver
 	roi = frame[points['y1']:points['y2'], points['x1']:points['x2']]
-    # Our operations on the frame come here
+    # Read text from ROI
 	text = pytesseract.image_to_string(roi, config=config)
+	#Send text using SocketIO
 	sio.emit('receiveSignal', {'signal': text})
+	#Send either full image or roi to receiver upon request, each is sent only once
 	if sendImage == 1:
 		emitImage(frame)
 	elif sendImage == 2:
@@ -63,6 +65,7 @@ while(True):
 	sendImage = 0
 	
     # Display the resulting frame
+	cv2.imshow('image',frame)
 	if cv2.waitKey(1) & 0xFF == ord('q'):
 		break
 
