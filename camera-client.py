@@ -41,7 +41,7 @@ def emitImage(img):
 
 sio.connect('http://localhost:5022')
 
-cap = cv2.VideoCapture('C:\\Users\\tot13\\Documents\\Bandicam\\bandicam 2020-11-10 18-01-18-255.mp4')
+cap = cv2.VideoCapture(0)
 config = ("-l eng --oem 1 --psm 7")
 
 while(True):
