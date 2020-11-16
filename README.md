@@ -1,5 +1,5 @@
 # Satellite Signal Sender
-Reads the satellite signal from TV using a webcam and sends it as text to a web-based receiver for Satellite dish positioning.
+Reads the satellite signal from TV using a webcam and sends it as text to a client running an HTML page for Satellite dish positioning.
 Useful when monitoring satellite signal strength when positioning a satellite dish.
 Signal is captured using webcam and sent over network as text to decrease bandwidth usage.
 ## Implementation Details
